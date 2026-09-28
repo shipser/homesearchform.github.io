@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>צ'ק-ליסט בדיקת דירה יד שנייה לפני קנייה</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f8; margin: 0; padding: 20px; direction: rtl; color: #333; }
+        .form-container { max-width: 850px; background: #fff; padding: 30px; margin: auto; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 25px; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #2980b9; border-bottom: 2px solid #ecf0f1; padding-bottom: 5px; margin-top: 25px; }
+        h3 { color: #16a085; font-size: 1.1em; margin-top: 15px; margin-bottom: 8px; }
+        .form-group { margin-bottom: 15px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .input-with-label { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+        .input-with-label label { min-width: 110px; font-weight: normal; margin-bottom: 0; }
+        .input-with-label input { flex: 1; }
+        .link-row { display: flex; gap: 10px; align-items: flex-end; }
+        .link-row .form-group { flex: 1; margin-bottom: 0; }
+        .dynamic-link-btn { background-color: #3498db; color: white; border: none; padding: 10px 15px; font-size: 14px; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; height: 41px; box-sizing: border-box; width: auto; font-weight: normal; white-space: nowrap; }
+        .dynamic-link-btn:hover { background-color: #2980b9; }
+        .dynamic-link-btn.disabled { background-color: #bdc3c7; cursor: not-allowed; pointer-events: none; }
+        .clear-link-btn { background-color: #e74c3c; color: white; border: none; padding: 10px 15px; font-size: 14px; border-radius: 4px; cursor: pointer; height: 41px; box-sizing: border-box; width: auto; font-weight: normal; white-space: nowrap; }
+        .clear-link-btn:hover { background-color: #c0392b; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input[type="text"], input[type="number"], input[type="date"], input[type="tel"], textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        input[type="url"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; direction: ltr; text-align: left; }
+        .checkbox-group, .radio-group { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 5px; align-items: center; }
+        .checkbox-group label, .radio-group label { font-weight: normal; cursor: pointer; }
+        button { background-color: #27ae60; color: white; border: none; padding: 15px 20px; font-size: 18px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 20px; }
+        button:hover { background-color: #219150; }
+        .secondary-btn { background-color: #2980b9; margin-top: 10px; width: auto; }
+        .secondary-btn:hover { background-color: #2471a3; }
+        .danger-btn { background-color: #c0392b; margin-top: 5px; padding: 8px 12px; font-size: 14px; width: auto; }
+        .danger-btn:hover { background-color: #962d22; }
+        .management-box { background: #eef2f5; padding: 15px; border-radius: 6px; margin-bottom: 25px; border: 1px solid #dcdde1; }
+        .saved-form-item { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px 15px; margin-top: 8px; border-radius: 4px; border: 1px solid #ddd; }
+        .balcony-card { background: #fdfdfd; border: 1px solid #e0e0e0; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+        .hidden { display: none !important; }
+        @media (max-width: 600px) { 
+            .grid-2 { grid-template-columns: 1fr; }
+            .input-with-label { flex-direction: column; align-items: stretch; }
+            .input-with-label label { min-width: auto; margin-bottom: 3px; font-weight: bold; }
+            .link-row { flex-direction: column; align-items: stretch; }
+            .dynamic-link-btn, .clear-link-btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h1>צ'ק-ליסט בדיקת דירה יד שנייה לפני קנייה</h1>
+
+    <!-- אזור ניהול ועריכת מספר טפסים -->
+    <div class="management-box">
+        <h3>ניהול טפסים שמורים</h3>
+        <p style="font-size: 13px; color: #555; margin-top: 0;">באפשרותך ליצור טופס חדש, לעבור בין טפסים קיימים או למחוק טפסים שנשמרו במכשירך.</p>
+        <button type="button" class="secondary-btn" onclick="createNewForm()" style="margin-top: 5px;">+ צור טופס בדיקה חדש</button>
+        <div id="saved_forms_list" style="margin-top: 15px;"></div>
+    </div>
+    
+    <form id="apartment_form" action="https://formspree.io/f/mljdoyvj" method="POST">
+        <input type="hidden" id="form_id" name="form_id">
+        
+        <h2>פרטים כלליים על הנכס</h2>
+        <div class="form-group"><label>כתובת:</label><input type="text" id="field_כתובת" name="כתובת" required></div>
+        
+        <div class="form-group">
+            <div class="link-row">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>קישור למודעה:</label>
+                    <input type="url" id="field_קישור_למודעה" name="קישור_למודעה" placeholder="https://..." oninput="updateDynamicLink()">
+                </div>
+                <button type="button" class="clear-link-btn" onclick="clearLinkField()">הסר קישור</button>
+                <a id="dynamic_ad_link" href="#" target="_blank" class="dynamic-link-btn disabled">מעבר למודעה</a>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group"><label>בעלי דירה - שם 1:</label><input type="text" id="field_בעלים_1_שם" name="בעלים_1_שם"></div>
+            <div class="form-group"><label>בעלי דירה - טלפון 1:</label><input type="tel" id="field_בעלים_1_טלפון" name="בעלים_1_טלפון" maxlength="11" placeholder="05X-XXXXXXX"></div>
+            <div class="form-group"><label>בעלי דירה - שם 2:</label><input type="text" id="field_בעלים_2_שם" name="בעלים_2_שם"></div>
+            <div class="form-group"><label>בעלי דירה - טלפון 2:</label><input type="tel" id="field_בעלים_2_טלפון" name="בעלים_2_טלפון" maxlength="11" placeholder="05X-XXXXXXX"></div>
+            <div class="form-group"><label>דיירים מציגים - שם 1:</label><input type="text" id="field_דייר_1_שם" name="דייר_1_שם"></div>
+            <div class="form-group"><label>דיירים מציגים - טלפון 1:</label><input type="tel" id="field_דייר_1_טלפון" name="דייר_1_טלפון" maxlength="11" placeholder="05X-XXXXXXX"></div>
+            <div class="form-group"><label>דיירים מציגים - שם 2:</label><input type="text" id="field_דייר_2_שם" name="דייר_2_שם"></div>
+            <div class="form-group"><label>דיירים מציגים - טלפון 2:</label><input type="tel" id="field_דייר_2_טלפון" name="דייר_2_טלפון" maxlength="11" placeholder="05X-XXXXXXX"></div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>מחיר מבוקש:</label>
+                <input type="text" id="price_display" placeholder="0 ₪" oninput="formatCurrency(this, 'price_real_value')">
+                <input type="hidden" name="מחיר_מבוקש" id="price_real_value">
+            </div>
+            <div></div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>תאריך פינוי:</label>
+                <input type="date" id="field_תאריך_פינוי" name="תאריך_פינוי">
+            </div>
+            <div></div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group"><label>שטח מודעה (מ"ר):</label><input type="number" step="0.1" id="field_שטח_מודעה" name="שטח_מודעה"></div>
+            <div class="form-group"><label>שטח ארנונה (מ"ר):</label><input type="number" step="0.1" id="field_שטח_ארנונה" name="שטח_ארנונה"></div>
+        </div>
+
+        <div class="form-group">
+            <label>מספר חדרים:</label>
+            <select name="מספר_חדרים" id="rooms_select" onchange="toggleOtherRoomsField(this.value)">
+                <option value="">בחר/י מספר חדרים</option>
+                <option value="סטודיו">סטודיו</option>
+                <option value="2">2</option>
+                <option value="2.5">2.5</option>
+                <option value="3">3</option>
+                <option value="3.5">3.5</option>
+                <option value="4">4</option>
+                <option value="4.5">4.5</option>
+                <option value="5">5</option>
+                <option value="5.5">5.5</option>
+                <option value="6">6</option>
+                <option value="6.5">6.5</option>
+                <option value="7">7</option>
+                <option value="7.5">7.5</option>
+                <option value="8">8</option>
+                <option value="אחר">אחר</option>
+            </select>
+            <input type="number" step="0.5" id="other_rooms_input" name="מספר_חדרים_אחר" placeholder="הזן/י מספר חדרים" class="hidden" style="margin-top: 5px;">
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group"><label>קומה:</label><input type="text" id="field_קומה" name="קומה"></div>
+            <div class="form-group"><label>מתוך קומות:</label><input type="text" id="field_מתוך_קומות" name="מתוך_קומות"></div>
+        </div>
+
+        <div class="form-group">
+            <label>מעלית:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="מעלית" value="יש" onchange="toggleElevatorFields(true)"> יש</label>
+                <label><input type="radio" name="מעלית" value="אין" onchange="toggleElevatorFields(false)"> אין</label>
+            </div>
+        </div>
+
+        <div id="elevator_details_container" class="grid-2 hidden">
+            <div class="form-group">
+                <label>כמה מעליות:</label>
+                <select name="כמות_מעליות" id="elevator_count">
+                    <option value="">בחר/י כמות</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>גודל מעליות:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="גודל_מעלית" value="קטנות"> קטנות</label>
+                    <label><input type="radio" name="גודל_מעלית" value="בינוניות"> בינוניות</label>
+                    <label><input type="radio" name="גודל_מעלית" value="גדולות"> גדולות</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>חנייה:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="חניה[]" value="בטאבו"> בטאבו</label>
+                <label><input type="checkbox" name="חניה[]" value="ללא חנייה בטאבו"> ללא חנייה בטאבו</label>
+                <label><input type="checkbox" name="חניה[]" value="מתחם עם סימון"> מתחם עם סימון</label>
+                <label><input type="checkbox" name="חניה[]" value="מתחם ללא סימון"> מתחם ללא סימון</label>
+                <label><input type="checkbox" name="חניה[]" value="חנייה ברחוב"> חנייה ברחוב</label>
+                <label><input type="checkbox" name="חניה[]" value="יש מצוקת חנייה"> יש מצוקת חנייה</label>
+            </div>
+            <input type="text" id="field_הערות_חניה" name="הערות_חניה" placeholder="הערות לחנייה" style="margin-top:5px;">
+        </div>
+
+        <div class="form-group">
+            <label>מחסן:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="מחסן[]" value="יש צמוד דירה"> יש צמוד דירה</label>
+                <label><input type="checkbox" name="מחסן[]" value="יש בקומת מחסנים"> יש בקומת מחסנים</label>
+                <label><input type="checkbox" name="מחסן[]" value="אין"> אין</label>
+            </div>
+            <input type="text" id="field_הערות_מחסן" name="הערות_מחסן" placeholder="הערות למחסן" style="margin-top:5px;">
+        </div>
+
+        <h3>מרפסת</h3>
+        <div class="form-group">
+            <div class="radio-group">
+                <label><input type="radio" name="מרפסת_קיומה" value="אין" onchange="toggleBalconySection(false)"> אין מרפסת</label>
+                <label><input type="radio" name="מרפסת_קיומה" value="יש" onchange="toggleBalconySection(true)"> יש מרפסת</label>
+            </div>
+        </div>
+
+        <div id="balcony_count_container" class="form-group hidden">
+            <label>כמות מרפסות:</label>
+            <select name="כמות_מרפסות" id="balcony_count" onchange="updateBalconyFields()">
+                <option value="">בחר/י כמות</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
+        </div>
+
+        <div id="balconies_container"></div>
+
+        <div class="form-group"><input type="text" id="field_הערות_מרפסת" name="הערות_מרפסת" placeholder="הערות למרפסת"></div>
+
+        <div class="form-group">
+            <label>דרך תיווך:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="תיווך" value="כן" onchange="toggleAgentField(true)"> כן</label>
+                <label><input type="radio" name="תיווך" value="לא" onchange="toggleAgentField(false)"> לא</label>
+            </div>
+            <input type="text" id="agent_name_input" name="שם_מתווך" placeholder="שם המתווך" class="hidden" style="margin-top:5px;">
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>גיל הבניין (שנים):</label>
+                <input type="number" id="field_גיל_הבניין" name="גיל_הבניין">
+            </div>
+            <div></div>
+        </div>
+
+        <div class="form-group">
+            <label>קודן בכניסה לבניין:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="קודן" value="יש ופעיל"> יש ופעיל</label>
+                <label><input type="radio" name="קודן" value="יש ולא פעיל"> יש ולא פעיל</label>
+                <label><input type="radio" name="קודן" value="אין"> אין</label>
+            </div>
+        </div>
+
+        <h2>תשתיות דירה</h2>
+        <h3>מים, איטום וגז</h3>
+        <div class="form-group">
+            <label>לחץ מים:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="לחץ_מים" value="תקין"> תקין</label>
+                <label><input type="radio" name="לחץ_מים" value="חלש"> חלש</label>
+                <label><input type="radio" name="לחץ_מים" value="לא נבדק"> לא נבדק</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>מסנני מים In-Line:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="מסנני_מים[]" value="אין"> אין</label>
+                <label><input type="checkbox" name="מסנני_מים[]" value="בר ייעודי במטבח"> בר ייעודי במטבח</label>
+                <label><input type="checkbox" name="מסנני_מים[]" value="בכיור מטבח"> בכיור מטבח</label>
+                <label><input type="checkbox" name="מסנני_מים[]" value="על קו ראשי של הבית"> על קו ראשי של הבית</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>מצב כיורים:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="מצב_כיורים[]" value="תקין"> תקין</label>
+                <label><input type="checkbox" name="מצב_כיורים[]" value="נדרש תיקון / החלפה"> נדרש תיקון / החלפה</label>
+                <label><input type="checkbox" name="מצב_כיורים[]" value="יש עובש"> יש עובש</label>
+            </div>
+            <input type="text" id="field_מצב_כיורים_אחר" name="מצב_כיורים_אחר" placeholder="פירוט נוסף/אחר" style="margin-top:5px;">
+        </div>
+
+        <div class="form-group">
+            <label>ניקוז:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="ניקוז" value="תקין"> תקין</label>
+                <label><input type="radio" name="ניקוז" value="לא תקין"> לא תקין</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>סימני עובש ורטיבות:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="רטיבות[]" value="ללא סימנים"> ללא סימנים</label>
+                <label><input type="checkbox" name="רטיבות[]" value="רטיבות ישנה"> רטיבות ישנה</label>
+                <label><input type="checkbox" name="רטיבות[]" value="רטיבות פעילה"> רטיבות פעילה</label>
+                <label><input type="checkbox" name="רטיבות[]" value="עובש"> עובש</label>
+            </div>
+            <input type="text" id="field_מיקום_עובש" name="מיקום_עובש" placeholder="מיקום העובש/רטיבות" style="margin-top:5px;">
+        </div>
+
+        <div class="form-group">
+            <label>צנרת:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="צנרת" value="לא ידוע סוג ומצב"> לא ידוע סוג ומצב</label>
+                <label><input type="radio" name="צנרת" value="צנרת ישנה ולא משופצת"> צנרת ישנה ולא משופצת</label>
+                <label><input type="radio" name="צנרת" value="צנרת פלסטיק"> צנרת פלסטיק</label>
+            </div>
+            <input type="number" id="field_צנרת_שנים_משיפוץ" name="צנרת_שנים_משיפוץ" placeholder="שיפוץ בוצע לפני (שנים)" style="margin-top:5px;">
+        </div>
+
+        <div class="form-group">
+            <label>חימום מים:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="חימום_מים[]" value="ללא"> ללא</label>
+                <label><input type="checkbox" name="חימום_מים[]" value="דוד חשמל"> דוד חשמל</label>
+                <label><input type="checkbox" name="חימום_מים[]" value="גז"> גז</label>
+                <label><input type="checkbox" name="חימום_מים[]" value="שמש פרטי"> שמש פרטי</label>
+                <label><input type="checkbox" name="חימום_מים[]" value="שמש משותף לבניין"> שמש משותף לבניין</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>גז:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="גז_קיום" value="ללא" onchange="toggleGasCompanyField(false)"> ללא</label>
+                <label><input type="radio" name="גז_קיום" value="אינדוקציה בלבד" onchange="toggleGasCompanyField(false)"> אינדוקציה בלבד</label>
+                <label><input type="radio" name="גז_קיום" value="יש" onchange="toggleGasCompanyField(true)"> יש</label>
+            </div>
+            <input type="text" id="gas_company_input" name="חברת_גז" placeholder="חברת גז" class="hidden" style="margin-top:5px;">
+        </div>
+
+        <div class="form-group">
+            <label>סוג תשתית גז:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="תשתית_גז" value="צובר מרכזי לרחוב"> צובר מרכזי לרחוב</label>
+                <label><input type="radio" name="תשתית_גז" value="צובר למתחם"> צובר למתחם</label>
+                <label><input type="radio" name="תשתית_גז" value="צובר לבניין"> צובר לבניין</label>
+                <label><input type="radio" name="תשתית_גז" value="בלונים לבניין"> בלונים לבניין</label>
+                <label><input type="radio" name="תשתית_גז" value="בלונים לדירה"> בלונים לדירה</label>
+                <label><input type="radio" name="תשתית_גז" value="ללא"> ללא</label>
+            </div>
+        </div>
+
+        <h3>חשמל, תאורה ותשתיות תקשורת</h3>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>סוג מונה:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="מונה_סוג" value="ישן"> ישן</label>
+                    <label><input type="radio" name="מונה_סוג" value="מונה חכם חדש"> מונה חכם חדש</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>מיקום מונה:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="מונה_מיקום" value="בקומה"> בקומה</label>
+                    <label><input type="radio" name="מונה_מיקום" value="מיקום מרכזי בבניין"> מיקום מרכזי בבניין</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>סוג חיבור:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="חיבור_חשמל" value="חד פאזי"> חד פאזי</label>
+                    <label><input type="radio" name="חיבור_חשמל" value="תלת פאזי"> תלת פאזי</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>מצב לוח חשמל:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="לוח_חשמל" value="תקין"> תקין</label>
+                    <label><input type="radio" name="לוח_חשמל" value="נדרש טיפול"> נדרש טיפול</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>שקעים:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="שקעים" value="תקין"> תקין</label>
+                    <label><input type="radio" name="שקעים" value="נדרש טיפול"> נדרש טיפול</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>תאורה מלאכותית:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="תאורה_מלאכותית" value="תקין"> תקין</label>
+                    <label><input type="radio" name="תאורה_מלאכותית" value="נדרש טיפול"> נדרש טיפול</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>תאורה טבעית וכיוון:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="תאורה_טבעית" value="מואר"> מואר</label>
+                <label><input type="radio" name="תאורה_טבעית" value="חשוך"> חשוך</label>
+            </div>
+            <div class="checkbox-group" style="margin-top: 5px;">
+                <label><input type="checkbox" name="כיוון_תאורה[]" value="צפון"> צפון</label>
+                <label><input type="checkbox" name="כיוון_תאורה[]" value="דרום"> דרום</label>
+                <label><input type="checkbox" name="כיוון_תאורה[]" value="מזרח"> מזרח</label>
+                <label><input type="checkbox" name="כיוון_תאורה[]" value="מערב"> מערב</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>ספק אינטרנט זמין:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="אינטרנט[]" value="בזק"> בזק</label>
+                <label><input type="checkbox" name="אינטרנט[]" value="הוט"> הוט</label>
+                <label><input type="checkbox" name="אינטרנט[]" value="סלקום"> סלקום</label>
+                <label><input type="checkbox" name="אינטרנט[]" value="פרטנר"> פרטנר</label>
+                <label><input type="checkbox" name="אינטרנט[]" value="אנלימיטד (IBDC)"> אנלימיטד (IBDC)</label>
+                <label><input type="checkbox" name="אינטרנט[]" value="ללא"> ללא</label>
+            </div>
+            <input type="text" id="field_אינטרנט_אחר" name="אינטרנט_אחר" placeholder="אחר" style="margin-top: 5px;">
+        </div>
+
+        <div class="form-group"><label>מיקום נקודת הזנה לבית:</label><input type="text" id="field_מיקום_נקודת_הזנה" name="מיקום_נקודת_הזנה"></div>
+
+        <div class="form-group">
+            <label>תשתית תקשורת פנים:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="תקשורת_פנים[]" value="ללא"> ללא</label>
+                <label><input type="checkbox" name="תקשורת_פנים[]" value="קו טלפון"> קו טלפון</label>
+                <label><input type="checkbox" name="תקשורת_פנים[]" value="כבלים"> כבלים</label>
+                <label><input type="checkbox" name="תקשורת_פנים[]" value="אתרנט"> אתרנט</label>
+                <label><input type="checkbox" name="תקשורת_פנים[]" value="סיבים"> סיבים</label>
+            </div>
+            <input type="text" id="field_תקשורת_פנים_אחר" name="תקשורת_פנים_אחר" placeholder="אחר" style="margin-top:5px;">
+        </div>
+
+        <div class="form-group">
+            <label>תשתית כבלים:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="כבלים_תשתית[]" value="הוט"> הוט</label>
+                <label><input type="checkbox" name="כבלים_תשתית[]" value="יס"> יס</label>
+                <label><input type="checkbox" name="כבלים_תשתית[]" value="פרטנר"> פרטנר</label>
+                <label><input type="checkbox" name="כבלים_תשתית[]" value="סלקום"> סלקום</label>
+                <label><input type="checkbox" name="כבלים_תשתית[]" value="FreeTV"> FreeTV</label>
+            </div>
+            <input type="text" id="field_כבלים_אחר" name="כבלים_אחר" placeholder="אחר" style="margin-top:5px;">
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group"><label>איכות קליטה סלולרית:</label><input type="text" id="field_קליטה_איכות" name="קליטה_איכות"></div>
+            <div class="form-group"><label>חברה סלולרית נבדקת:</label><input type="text" id="field_קליטה_חברה" name="קליטה_חברה"></div>
+        </div>
+
+        <h2>מוגנות, חלונות, דלתות וממ"ד</h2>
+        <h3>ממ"ד</h3>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>אטימה ונעילה של החלון:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="ממד_חלון_אטימה" value="תקין"> תקין</label>
+                    <label><input type="radio" name="ממד_חלון_אטימה" value="נדרש טיפול"> נדרש טיפול</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>סוג הגנה:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="ממד_סוג_הגנה" value="כנף בודדת"> כנף בודדת</label>
+                    <label><input type="radio" name="ממד_סוג_הגנה" value="שתי כנפיים"> שתי כנפיים</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>סוג חלון:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="ממד_סוג_חלון" value="פתיחה רגילה"> פתיחה רגילה</label>
+                    <label><input type="radio" name="ממד_סוג_חלון" value="פתיחה דו צירית"> פתיחה דו צירית</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>אטימה ונעילה של הדלת:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="ממד_דלת_אטימה" value="תקין"> תקין</label>
+                    <label><input type="radio" name="ממד_דלת_אטימה" value="נדרש טיפול"> נדרש טיפול</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>תיבת נוח:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="תיבת_נוח" value="יש ותקין"> יש ותקין</label>
+                <label><input type="radio" name="תיבת_נוח" value="יש ולא תקין"> יש ולא תקין</label>
+                <label><input type="radio" name="תיבת_נוח" value="אין"> אין</label>
+            </div>
+        </div>
+        <div class="form-group"><input type="text" id="field_הערות_ממד" name="הערות_ממד" placeholder="הערות לממ''ד"></div>
+
+        <h3>חלונות, דלתות, סורגים ורשתות</h3>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>תריסים:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="תריסים_קיומם" value="יש" onchange="toggleShuttersTypeField(true)"> יש</label>
+                    <label><input type="radio" name="תריסים_קיומם" value="אין" onchange="toggleShuttersTypeField(false)"> אין</label>
+                </div>
+            </div>
+            <div id="shutters_type_container" class="form-group hidden">
+                <label>סוג תריסים:</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="תריסים_סוג[]" value="ארגז גלילה"> ארגז גלילה</label>
+                    <label><input type="checkbox" name="תריסים_סוג[]" value="חשמלי"> חשמלי</label>
+                    <label><input type="checkbox" name="תריסים_סוג[]" value="דלתות"> דלתות</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>דלתות פנים:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="דלתות_פנים[]" value="תקין"> תקין</label>
+                <label><input type="checkbox" name="דלתות_פנים[]" value="מנגנון לא תקין"> מנגנון לא תקין</label>
+                <label><input type="checkbox" name="דלתות_פנים[]" value="צירים לא תקינים"> צירים לא תקינים</label>
+                <label><input type="checkbox" name="דלתות_פנים[]" value="משקופים לא תקינים"> משקופים לא תקינים</label>
+            </div>
+            <input type="text" id="field_הערות_דלתות_פנים" name="הערות_דלתות_פנים" placeholder="הערות לדלתות פנים" style="margin-top: 5px;">
+        </div>
+
+        <div class="form-group">
+            <label>דלת כניסה:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="דלת_כניסה[]" value="תקין"> תקין</label>
+                <label><input type="checkbox" name="דלת_כניסה[]" value="מנגנון לא תקין"> מנגנון לא תקין</label>
+                <label><input type="checkbox" name="דלת_כניסה[]" value="צירים לא תקינים"> צירים לא תקינים</label>
+                <label><input type="checkbox" name="דלת_כניסה[]" value="משקוף לא תקין"> משקוף לא תקין</label>
+                <label><input type="checkbox" name="דלת_כניסה[]" value="כניסת אור מתחת לדלת"> כניסת אור מתחת לדלת</label>
+            </div>
+            <input type="text" id="field_הערות_דלת_כניסה" name="הערות_דלת_כניסה" placeholder="הערות לדלת כניסה" style="margin-top: 5px;">
+        </div>
+
+        <div class="form-group">
+            <label>סורגים:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="סורגים" value="יש"> יש</label>
+                <label><input type="radio" name="סורגים" value="אין"> אין</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>רשתות:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="רשתות" value="יש"> יש</label>
+                <label><input type="radio" name="רשתות" value="אין"> אין</label>
+            </div>
+        </div>
+
+        <div class="form-group"><input type="text" id="field_הערות_חלונות_ורשתות" name="הערות_חלונות_ורשתות" placeholder="הערות נוספות לחלונות/רשתות"></div>
+
+        <h2>אקלים ומזגנים</h2>
+        <div class="form-group">
+            <label>כיווני אוויר:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="כיווני_אוויר[]" value="צפון"> צפון</label>
+                <label><input type="checkbox" name="כיווני_אוויר[]" value="דרום"> דרום</label>
+                <label><input type="checkbox" name="כיווני_אוויר[]" value="מזרח"> מזרח</label>
+                <label><input type="checkbox" name="כיווני_אוויר[]" value="מערב"> מערב</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>מזגנים:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="מזגנים[]" value="ללא"> ללא</label>
+                <label><input type="checkbox" name="מזגנים[]" value="מרכזי"> מרכזי</label>
+                <label><input type="checkbox" name="מזגנים[]" value="מזגן בחדרים" onchange="toggleRoomsAirconField(this)"> מזגן בחדרים</label>
+                <input type="text" id="rooms_aircon_input" name="מזגן_בחדרים_פירוט" placeholder="ציין/י באיזה חדרים" class="hidden" style="width: 200px; padding: 5px; display: inline-block;">
+            </div>
+        </div>
+
+        <h2>מקלחות ושירותים</h2>
+        <div class="grid-2">
+            <div class="form-group"><label>כמות מקלחות:</label><input type="number" id="field_כמות_מקלחות" name="כמות_מקלחות"></div>
+            <div class="form-group"><label>כמות שירותים:</label><input type="number" id="field_כמות_שירותים" name="כמות_שירותים"></div>
+        </div>
+        
+        <div class="form-group">
+            <label>סוגי מקלחות ומיקום:</label>
+            <div class="input-with-label">
+                <label>אמבטיה:</label>
+                <input type="text" id="field_מקלחת_אמבטיה_מיקום" name="מקלחת_אמבטיה_מיקום" placeholder="מיקום">
+            </div>
+            <div class="input-with-label" style="margin-top: 5px;">
+                <label>דוש עמידה:</label>
+                <input type="text" id="field_מקלחת_דוש_מיקום" name="מקלחת_דוש_מיקום" placeholder="מיקום">
+            </div>
+            <div class="input-with-label" style="margin-top: 5px;">
+                <label>אחר:</label>
+                <input type="text" id="field_מקלחת_אחר" name="מקלחת_אחר" placeholder="פירוט">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>תקינות שיפועי ניקוז:</label>
+            <div class="input-with-label">
+                <label>תקין:</label>
+                <input type="text" id="field_שיפועי_ניקוז_תקין_מיקום" name="שיפועי_ניקוז_תקין_מיקום" placeholder="מיקום">
+            </div>
+            <div class="input-with-label" style="margin-top: 5px;">
+                <label>לא תקין:</label>
+                <input type="text" id="field_שיפועי_ניקוז_לא_תקין_מיקום" name="שיפועי_ניקוז_לא_תקין_מיקום" placeholder="מיקום">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>נזילות מקלחת / שירותים:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="נזילות_מקלחת_קיומן" value="אין"> אין</label>
+                <label><input type="radio" name="נזילות_מקלחת_קיומן" value="יש"> יש</label>
+            </div>
+            <input type="text" id="field_נזילות_מקלחת_פירוט" name="נזילות_מקלחת_פירוט" placeholder="פירוט נזילות במידה ויש" style="margin-top:5px;">
+        </div>
+
+        <h2>ריהוט מובנה</h2>
+        <h3>מטבח</h3>
+        
+        <div class="form-group">
+            <label>גובה ארונות עליונים:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="מטבח_ארונות_גובה" value="סטנדרט" onchange="toggleUpperCabinetsHeight(false)"> סטנדרט</label>
+                <label><input type="radio" name="מטבח_ארונות_גובה" value="מותאם" onchange="toggleUpperCabinetsHeight(true)"> מותאם</label>
+                <input type="number" id="upper_cabinets_cm" name="מטבח_ארונות_גובה_סמ" placeholder="ס''מ" class="hidden" style="width: 100px; padding: 5px; display: inline-block;">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>הכנה למדיח:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="הכנה_למדיח" value="יש"> יש</label>
+                <label><input type="radio" name="הכנה_למדיח" value="אין"> אין</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>הכנה לתנור:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="הכנה_לתנור" value="אין"> אין</label>
+                <label><input type="radio" name="הכנה_לתנור" value="Built-In"> Built-In</label>
+                <label><input type="radio" name="הכנה_לתנור" value="משולב"> משולב</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>הכנה לקולט אדים:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="הכנה_לקולט_אדים" value="אין"> אין</label>
+                <label><input type="radio" name="הכנה_לקולט_אדים" value="יש הכנה"> יש הכנה</label>
+                <label><input type="radio" name="הכנה_לקולט_אדים" value="יש קולט"> יש קולט</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>מיקום למיקרו:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="מיקום_למיקרו" value="אין"> אין</label>
+                <label><input type="radio" name="מיקום_למיקרו" value="יש - פתוח"> יש - פתוח</label>
+                <label><input type="radio" name="מיקום_למיקרו" value="יש - דלת"> יש - דלת</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>הכנה לבר מים:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="הכנה_לבר_מים" value="אין"> אין</label>
+                <label><input type="radio" name="הכנה_לבר_מים" value="יש ללא קידוח שיש"> יש ללא קידוח שיש</label>
+                <label><input type="radio" name="הכנה_לבר_מים" value="יש עם קידוח שיש"> יש עם קידוח שיש</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>גז במטבח:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="גז_מטבח" value="אין"> אין</label>
+                <label><input type="radio" name="גז_מטבח" value="משולב"> משולב</label>
+                <label><input type="radio" name="גז_מטבח" value="ללא הגבהה בשיש"> ללא הגבהה בשיש</label>
+                <label><input type="radio" name="גז_מטבח" value="הגבהה בשיש"> הגבהה בשיש</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>גודל מקרר:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="גודל_מקרר" value="משרדי"> משרדי</label>
+                <label><input type="radio" name="גודל_מקרר" value="סטודנטים"> סטודנטים</label>
+                <label><input type="radio" name="גודל_מקרר" value="סטנדרטי"> סטנדרטי</label>
+                <label><input type="radio" name="גודל_מקרר" value="רחב"> רחב</label>
+                <label><input type="radio" name="גודל_מקרר" value="דלת כפולה"> דלת כפולה</label>
+            </div>
+        </div>
+
+        <h3>ארונות וריהוט קבוע נוסף</h3>
+        <div class="form-group"><label>ארונות נישה בחדרים:</label><input type="text" id="field_ארונות_נישה" name="ארונות_נישה"></div>
+        <div class="form-group"><label>ריהוט מובנה במקלחת:</label><input type="text" id="field_ריהוט_מקלחת" name="ריהוט_מקלחת"></div>
+        <div class="form-group">
+            <label>יחידת שירות:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="יחידת_שירות[]" value="אין"> אין</label>
+                <label><input type="checkbox" name="יחידת_שירות[]" value="ללא ארונות"> ללא ארונות</label>
+                <label><input type="checkbox" name="יחידת_שירות[]" value="הכנה למכונת כביסה"> הכנה למכונת כביסה</label>
+                <label><input type="checkbox" name="יחידת_שירות[]" value="הכנה למייבש כביסה"> הכנה למייבש כביסה</label>
+            </div>
+        </div>
+        <div class="form-group"><label>נוספים:</label><input type="text" id="field_ריהוט_נוסף" name="ריהוט_נוסף"></div>
+
+        <h2>סביבה ואיכות חיים</h2>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>רעש:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="רעש" value="רועש"> רועש</label>
+                    <label><input type="radio" name="רעש" value="רגוע"> רגוע</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>קרבה לבתי ספר וגנים:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="קרבה_לספר_וגנים" value="קרוב"> קרוב</label>
+                    <label><input type="radio" name="קרבה_לספר_וגנים" value="רחוק"> רחוק</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group"><label>הערות רעש:</label><input type="text" id="field_הערות_רעש" name="הערות_רעש"></div>
+        <div class="form-group"><label>ריחות ועישון:</label><input type="text" id="field_ריחות_ועישון" name="ריחות_ועישון"></div>
+        <div class="form-group"><label>שכנים:</label><input type="text" id="field_שכנים" name="שכנים"></div>
+        <div class="form-group"><label>תחושה כללית ברחוב:</label><input type="text" id="field_תחושה_ברחוב" name="תחושה_ברחוב"></div>
+
+        <h2>בניין ושטחים משותפים</h2>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>תחזוקה:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="תחזוקת_בניין" value="תקין"> תקין</label>
+                    <label><input type="radio" name="תחזוקת_בניין" value="דורש טיפול"> דורש טיפול</label>
+                    <label><input type="radio" name="תחזוקת_בניין" value="הרוס"> הרוס</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>ניקיון כללי:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="ניקיון_כללי" value="נקי"> נקי</label>
+                    <label><input type="radio" name="ניקיון_כללי" value="מלוכלך"> מלוכלך</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>ניקיון חדר אשפה:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="חדר_אשפה" value="נקי"> נקי</label>
+                    <label><input type="radio" name="חדר_אשפה" value="מלוכלך"> מלוכלך</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>גג:</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="גג[]" value="גישה נוחה"> גישה נוחה</label>
+                    <label><input type="checkbox" name="גג[]" value="גישה לא נוחה"> גישה לא נוחה</label>
+                    <label><input type="checkbox" name="גג[]" value="גישה סגורה"> גישה סגורה</label>
+                    <label><input type="checkbox" name="גג[]" value="גישה פתוחה חופשי"> גישה פתוחה חופשי</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>מרחב מוגן ציבורי:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="מרחב_מוגן_ציבורי[]" value="ממ''ק"> ממ"ק</label>
+                <label><input type="checkbox" name="מרחב_מוגן_ציבורי[]" value="מקלט בבניין"> מקלט בבניין</label>
+                <label><input type="checkbox" name="מרחב_מוגן_ציבורי[]" value="מקלט קרוב"> מקלט קרוב</label>
+                <label><input type="checkbox" name="מרחב_מוגן_ציבורי[]" value="ללא"> ללא</label>
+            </div>
+            <input type="text" id="field_מרחב_מוגן_אחר" name="מרחב_מוגן_אחר" placeholder="אחר" style="margin-top:5px;">
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>גינון:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="גינון" value="מתוחזק"> מתוחזק</label>
+                    <label><input type="radio" name="גינון" value="לא מתוחזק"> לא מתוחזק</label>
+                    <label><input type="radio" name="גינון" value="לא קיים"> לא קיים</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>קינון ציפורים:</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="קינון_ציפורים[]" value="אין"> אין</label>
+                    <label><input type="checkbox" name="קינון_ציפורים[]" value="יונים"> יונים</label>
+                    <label><input type="checkbox" name="קינון_ציפורים[]" value="בזים"> בזים</label>
+                </div>
+                <input type="text" id="field_קינון_אחר" name="קינון_אחר" placeholder="אחר" style="margin-top: 5px;">
+            </div>
+        </div>
+
+        <h3>נגישות</h3>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>מדרגות כניסה לבית:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="מדרגות_לבית_קיום" value="אין"> אין</label>
+                    <label><input type="radio" name="מדרגות_לבית_קיום" value="יש"> יש</label>
+                </div>
+                <input type="number" id="field_כמות_מדרגות_לבית" name="כמות_מדרגות_לבית" placeholder="כמות מדרגות" style="margin-top:5px;">
+            </div>
+            <div class="form-group">
+                <label>מדרגות כניסה לבניין:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="מדרגות_לבניין_קיום" value="אין"> אין</label>
+                    <label><input type="radio" name="מדרגות_לבניין_קיום" value="יש"> יש</label>
+                </div>
+                <input type="number" id="field_כמות_מדרגות_לבניין" name="כמות_מדרגות_לבניין" placeholder="כמות מדרגות" style="margin-top:5px;">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>רמפה:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="רמפה" value="אין"> אין</label>
+                <label><input type="radio" name="רמפה" value="רק לעגלת יחיד"> רק לעגלת יחיד</label>
+                <label><input type="radio" name="רמפה" value="רחבה"> רחבה</label>
+            </div>
+        </div>
+
+        <h2>שאלות מפתח למוכר / מתווך</h2>
+        <div class="form-group"><label>מה סיבת המכירה?</label><textarea id="field_סיבת_מכירה" name="סיבת_מכירה" rows="2"></textarea></div>
+        
+        <div class="form-group">
+            <label>האם בוצע שיפוץ בדירה?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="שיפוץ_בוצע" value="לא"> לא</label>
+                <label><input type="radio" name="שיפוץ_בוצע" value="כן"> כן</label>
+            </div>
+            <input type="text" id="field_שיפוץ_מתי" name="שיפוץ_מתי" placeholder="מתי בוצע?" style="margin-top:5px;">
+            <textarea id="field_שיפוץ_פירוט" name="שיפוץ_פירוט" rows="2" placeholder="מה כלל (חשמל, אינסטלציה, קוסמטי וכו')?" style="margin-top:5px;"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>האם היו בעבר בעיות נזילות / רטיבות בגלל תקלה בדירה?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="נזילות_בעבר_דירה" value="לא"> לא</label>
+                <label><input type="radio" name="נזילות_בעבר_דירה" value="כן"> כן</label>
+            </div>
+            <input type="text" id="field_נזילות_בעבר_מתי" name="נזילות_בעבר_מתי" placeholder="מתי?" style="margin-top:5px;">
+            <textarea id="field_נזילות_בעבר_תיקון" name="נזילות_בעבר_תיקון" rows="2" placeholder="מה כלל התיקון?" style="margin-top:5px;"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>האם היו בעבר בעיות נזילות / רטיבות מהשכנים / גג / קירות חיצוניים?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="נזילות_חיצוניות_בעבר" value="לא"> לא</label>
+                <label><input type="radio" name="נזילות_חיצוניות_בעבר" value="כן"> כן</label>
+            </div>
+            <input type="text" id="field_נזילות_חיצוניות_מתי" name="נזילות_חיצוניות_מתי" placeholder="מתי?" style="margin-top:5px;">
+            <textarea id="field_נזילות_חיצוניות_תיקון" name="נזילות_חיצוניות_תיקון" rows="2" placeholder="מה כלל התיקון?" style="margin-top:5px;"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>האם כלל ההצמדות רשומות תקין בנוסח טאבו?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="הצמדות_טאבו" value="לא"> לא</label>
+                <label><input type="radio" name="הצמדות_טאבו" value="כן"> כן</label>
+            </div>
+            <input type="text" id="field_הערות_טאבו" name="הערות_טאבו" placeholder="הערות" style="margin-top: 5px;">
+        </div>
+
+        <div class="form-group">
+            <label>האם קיימת תוכנית התחדשות עירונית (תמ"א 38 / פינוי בינוי) מאושרת או בתהליך?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="התחדשות_עירונית" value="לא"> לא</label>
+                <label><input type="radio" name="התחדשות_עירונית" value="כן"> כן</label>
+            </div>
+            <input type="text" id="field_התחדשות_עירונית_מתי" name="התחדשות_עירונית_מתי" placeholder="מתי?" style="margin-top:5px;">
+            <textarea id="field_התחדשות_עירונית_הערות" name="התחדשות_עירונית_הערות" rows="2" placeholder="הערות" style="margin-top:5px;"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>האם יש תכנוני בנייה / בנייה בתהליך באיזור?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="תכנוני_בניה_אזור" value="לא"> לא</label>
+                <label><input type="radio" name="תכנוני_בניה_אזור" value="כן"> כן</label>
+            </div>
+            <input type="text" id="field_תכנוני_בניה_מתי" name="תכנוני_בניה_מתי" placeholder="מתי?" style="margin-top:5px;">
+            <textarea id="field_תכנוני_בניה_הערות" name="תכנוני_בניה_הערות" rows="2" placeholder="הערות" style="margin-top:5px;"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>האם יש פארקים קרובים?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="פארקים_קרובים" value="לא"> לא</label>
+                <label><input type="radio" name="פארקים_קרובים" value="כן"> כן</label>
+            </div>
+            <input type="text" id="field_פארקים_הערות" name="פארקים_הערות" placeholder="הערות" style="margin-top:5px;">
+        </div>
+
+        <div class="form-group">
+            <label>האם יש בתי ספר וגנים קרובים?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="בתי_ספר_קרובים" value="לא"> לא</label>
+                <label><input type="radio" name="בתי_ספר_קרובים" value="כן"> כן</label>
+            </div>
+            <input type="text" id="field_בתי_ספר_הערות" name="בתי_ספר_הערות" placeholder="הערות" style="margin-top:5px;">
+        </div>
+
+        <div class="form-group">
+            <label>האם יש בתי כנסת קרובים?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="בתי_כנסת_קרובים" value="לא"> לא</label>
+                <label><input type="radio" name="בתי_כנסת_קרובים" value="כן"> כן</label>
+            </div>
+            <input type="text" id="field_בתי_כנסת_הערות" name="בתי_כנסת_הערות" placeholder="הערות" style="margin-top:5px;">
+        </div>
+
+        <div class="form-group">
+            <label>האם יש סופרים / מתחמי קניות קרובים?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="סופרים_קרובים" value="לא"> לא</label>
+                <label><input type="radio" name="סופרים_קרובים" value="כן"> כן</label>
+            </div>
+            <input type="text" id="field_סופרים_הערות" name="סופרים_הערות" placeholder="הערות" style="margin-top:5px;">
+        </div>
+
+        <div class="form-group">
+            <label>מצב העומס באזור:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="עומס_באזור" value="לא עמוס"> לא עמוס</label>
+                <label><input type="radio" name="עומס_באזור" value="עמוס כל הזמן"> עמוס כל הזמן</label>
+                <label><input type="radio" name="עומס_באזור" value="עמוס בשעות ספציפיות"> עמוס בשעות ספציפיות</label>
+            </div>
+            <input type="text" id="field_עומס_שעות_פירוט" name="עומס_שעות_פירוט" placeholder="פרט שעות ספציפיות" style="margin-top:5px;">
+        </div>
+
+        <h2>עלויות קבועות ושיפוץ</h2>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>ארנונה לחודשיים:</label>
+                <input type="text" id="arnona_display" placeholder="0 ₪" oninput="formatCurrency(this, 'arnona_real_value')">
+                <input type="hidden" name="עלות_ארנונה" id="arnona_real_value">
+            </div>
+            <div></div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>ועד בית / דמי ניהול לחודש:</label>
+                <input type="text" id="vaad_display" placeholder="0 ₪" oninput="formatCurrency(this, 'vaad_real_value')">
+                <input type="hidden" name="עלות_ועד_בית" id="vaad_real_value">
+            </div>
+            <div></div>
+        </div>
+
+        <div class="form-group">
+            <label>סוג ניהול ועד בית:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="סוג_ועד_בית[]" value="ללא"> ללא</label>
+                <label><input type="checkbox" name="סוג_ועד_בית[]" value="ועד דיירים"> ועד דיירים</label>
+                <label><input type="checkbox" name="סוג_ועד_בית[]" value="חברת ניהול"> חברת ניהול</label>
+            </div>
+            <input type="text" id="field_שם_חברת_ניהול" name="שם_חברת_ניהול" placeholder="שם חברת הניהול (אם יש)" style="margin-top:5px;">
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>גז לחודש:</label>
+                <input type="text" id="gas_display" placeholder="0 ₪" oninput="formatCurrency(this, 'gas_real_value')">
+                <input type="hidden" name="עלות_גז" id="gas_real_value">
+            </div>
+            <div></div>
+        </div>
+
+        <div class="form-group">
+            <label>האם יידרש שיפוץ?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="יידרש_שיפוץ" value="לא"> לא</label>
+                <label><input type="radio" name="יידרש_שיפוץ" value="כן"> כן</label>
+            </div>
+        </div>
+
+        <h2>הערות כלליות נוספות</h2>
+        <div class="form-group">
+            <textarea id="field_הערות_כלליות_נוספות" name="הערות_כלליות_נוספות" rows="6" placeholder="פירוט הערות נוספות..."></textarea>
+        </div>
+
+        <button type="submit">שמור טופס</button>
+    </form>
+</div>
+
+<script>
+// ניהול טפסים מרובים ב-localStorage
+document.addEventListener("DOMContentLoaded", function() {
+    initFormSystem();
+    initPhoneMasks();
+    initFormSubmitHandler();
+    updateDynamicLink();
+});
+
+function getStoredForms() {
+    let forms = localStorage.getItem('apartment_checklists');
+    return forms ? JSON.parse(forms) : {};
+}
+
+function saveStoredForms(forms) {
+    localStorage.setItem('apartment_checklists', JSON.stringify(forms));
+}
+
+function initFormSystem() {
+    let forms = getStoredForms();
+    let keys = Object.keys(forms);
+    
+    if (keys.length === 0) {
+        createNewForm();
+    } else {
+        loadForm(keys[0]);
+    }
+    renderFormsList();
+}
+
+function createNewForm() {
+    let formId = 'form_' + Date.now();
+    let forms = getStoredForms();
+    
+    forms[formId] = {
+        title: 'דירה חדשה (ללא כתובת)',
+        data: {}
+    };
+    
+    saveStoredForms(forms);
+    loadForm(formId);
+    renderFormsList();
+}
+
+function loadForm(formId) {
+    let forms = getStoredForms();
+    if (!forms[formId]) return;
+
+    document.getElementById('form_id').value = formId;
+    let formData = forms[formId].data;
+
+    document.getElementById('apartment_form').reset();
+    document.getElementById('form_id').value = formId;
+
+    for (let key in formData) {
+        let value = formData[key];
+        
+        if (key === 'מחיר_מבוקש_display') {
+            document.getElementById('price_display').value = value;
+            continue;
+        }
+        if (key === 'עלות_ארנונה_display') {
+            document.getElementById('arnona_display').value = value;
+            continue;
+        }
+        if (key === 'עלות_ועד_בית_display') {
+            document.getElementById('vaad_display').value = value;
+            continue;
+        }
+        if (key === 'עלות_גז_display') {
+            document.getElementById('gas_display').value = value;
+            continue;
+        }
+
+        let elements = document.querySelectorAll(`[name="${key}"], [name="${key}[]"]`);
+        if (elements.length > 0) {
+            if (elements[0].type === 'checkbox') {
+                elements.forEach(el => {
+                    if (Array.isArray(value) && value.includes(el.value)) {
+                        el.checked = true;
+                    }
+                });
+            } else if (elements[0].type === 'radio') {
+                elements.forEach(el => {
+                    if (el.value === value) {
+                        el.checked = true;
+                        let event = new Event('change', { bubbles: true });
+                        el.dispatchEvent(event);
+                    }
+                });
+            } else {
+                elements[0].value = value;
+            }
+        }
+    }
+
+    triggerConditionalDisplays();
+    updateDynamicLink();
+    renderFormsList();
+}
+
+function deleteForm(formId, event) {
+    event.stopPropagation();
+    if (confirm('האם אתה בטוח שברצונך למחוק את הטופס הזה?')) {
+        let forms = getStoredForms();
+        delete forms[formId];
+        saveStoredForms(forms);
+        
+        let keys = Object.keys(forms);
+        if (keys.length > 0) {
+            loadForm(keys[0]);
+        } else {
+            createNewForm();
+        }
+        renderFormsList();
+    }
+}
+
+function renderFormsList() {
+    let forms = getStoredForms();
+    let listContainer = document.getElementById('saved_forms_list');
+    let currentActiveId = document.getElementById('form_id').value;
+    
+    let html = '';
+    for (let id in forms) {
+        let address = forms[id].data['כתובת'] || 'ללא כתובת';
+        let isCurrent = (id === currentActiveId);
+        let activeStyle = isCurrent ? 'border: 2px solid #27ae60; background: #e8f8f5;' : '';
+        
+        html += `
+            <div class="saved-form-item" style="${activeStyle} cursor: pointer;" onclick="loadForm('${id}')">
+                <div>
+                    <strong>${address}</strong>
+                    <div style="font-size: 11px; color: #7f8c8d;">מזהה: ${id}</div>
+                </div>
+                <div>
+                    <button type="button" class="danger-btn" onclick="deleteForm('${id}', event)">מחק</button>
+                </div>
+            </div>
+        `;
+    }
+    listContainer.innerHTML = html;
+}
+
+document.getElementById('apartment_form').addEventListener('input', autoSaveCurrentForm);
+document.getElementById('apartment_form').addEventListener('change', autoSaveCurrentForm);
+
+function autoSaveCurrentForm() {
+    let formId = document.getElementById('form_id').value;
+    if (!formId) return;
+
+    let forms = getStoredForms();
+    if (!forms[formId]) return;
+
+    let formData = {};
+    let formElement = document.getElementById('apartment_form');
+    let elements = formElement.elements;
+
+    for (let i = 0; i < elements.length; i++) {
+        let el = elements[i];
+        if (!el.name || el.name === 'form_id') continue;
+
+        if (el.type === 'checkbox') {
+            if (!formData[el.name]) formData[el.name] = [];
+            if (el.checked) formData[el.name].push(el.value);
+        } else if (el.type === 'radio') {
+            if (el.checked) formData[el.name] = el.value;
+        } else {
+            formData[el.name] = el.value;
+        }
+    }
+
+    // שמירת שדות התצוגה המעוצבים
+    formData['מחיר_מבוקש_display'] = document.getElementById('price_display').value;
+    formData['עלות_ארנונה_display'] = document.getElementById('arnona_display').value;
+    formData['עלות_ועד_בית_display'] = document.getElementById('vaad_display').value;
+    formData['עלות_גז_display'] = document.getElementById('gas_display').value;
+
+    let address = formData['כתובת'] || 'דירה ללא כתובת';
+    forms[formId].title = address;
+    forms[formId].data = formData;
+
+    saveStoredForms(forms);
+    
+    let currentAddressSpan = document.querySelector(`[onclick="loadForm('${formId}')"] strong`);
+    if (currentAddressSpan) {
+        currentAddressSpan.innerText = address;
+    }
+}
+
+function updateDynamicLink() {
+    const input = document.getElementById('field_קישור_למודעה');
+    const inputVal = input.value.trim();
+    const linkBtn = document.getElementById('dynamic_ad_link');
+    
+    if (inputVal !== '') {
+        linkBtn.href = inputVal;
+        linkBtn.classList.remove('disabled');
+    } else {
+        linkBtn.href = '#';
+        linkBtn.classList.add('disabled');
+    }
+}
+
+function clearLinkField() {
+    const input = document.getElementById('field_קישור_למודעה');
+    input.value = '';
+    updateDynamicLink();
+    autoSaveCurrentForm();
+}
+
+function initFormSubmitHandler() {
+    const form = document.getElementById('apartment_form');
+    form.addEventListener('submit', function(e) {
+        let formId = document.getElementById('form_id').value;
+        if (!formId) return;
+
+        let forms = getStoredForms();
+        if (forms[formId]) {
+            delete forms[formId];
+            saveStoredForms(forms);
+        }
+    });
+}
+
+function triggerConditionalDisplays() {
+    let elevatorRadios = document.querySelectorAll('input[name="מעלית"]');
+    elevatorRadios.forEach(r => {
+        if (r.checked) toggleElevatorFields(r.value === 'יש');
+    });
+
+    let balconyRadios = document.querySelectorAll('input[name="מרפסת_קיומה"]');
+    balconyRadios.forEach(r => {
+        if (r.checked) {
+            toggleBalconySection(r.value === 'יש');
+            if(r.value === 'יש') updateBalconyFields();
+        }
+    });
+
+    let agentRadios = document.querySelectorAll('input[name="תיווך"]');
+    agentRadios.forEach(r => {
+        if (r.checked) toggleAgentField(r.value === 'כן');
+    });
+
+    let gasRadios = document.querySelectorAll('input[name="גז_קיום"]');
+    gasRadios.forEach(r => {
+        if (r.checked) toggleGasCompanyField(r.value === 'יש');
+    });
+
+    let shuttersRadios = document.querySelectorAll('input[name="תריסים_קיומם"]');
+    shuttersRadios.forEach(r => {
+        if (r.checked) toggleShuttersTypeField(r.value === 'יש');
+    });
+}
+
+function formatCurrency(input, realValueId) {
+    let rawValue = input.value.replace(/\D/g, '');
+    document.getElementById(realValueId).value = rawValue;
+
+    if (rawValue === '') {
+        input.value = '';
+        autoSaveCurrentForm();
+        return;
+    }
+
+    let formatted = Number(rawValue).toLocaleString('he-IL');
+    input.value = formatted + ' ₪';
+    autoSaveCurrentForm();
+}
+
+function initPhoneMasks() {
+    const phoneInputs = document.querySelectorAll('input[type="tel"]');
+    phoneInputs.forEach(input => {
+        input.addEventListener('input', function(e) {
+            let val = this.value.replace(/\D/g, ''); // הסרת כל מה שאינו מספר
+            if (val.length > 3) {
+                val = val.substring(0, 3) + '-' + val.substring(3, 10);
+            }
+            this.value = val;
+        });
+    });
+}
+
+function toggleOtherRoomsField(selectedValue) {
+    const otherRoomsInput = document.getElementById('other_rooms_input');
+    if (selectedValue === 'אחר') {
+        otherRoomsInput.classList.remove('hidden');
+    } else {
+        otherRoomsInput.classList.add('hidden');
+        otherRoomsInput.value = '';
+    }
+}
+
+function toggleElevatorFields(hasElevator) {
+    const detailsContainer = document.getElementById('elevator_details_container');
+    const select = document.getElementById('elevator_count');
+    
+    if (hasElevator) {
+        detailsContainer.classList.remove('hidden');
+    } else {
+        detailsContainer.classList.add('hidden');
+        select.value = "";
+    }
+}
+
+function toggleBalconySection(hasBalcony) {
+    const countContainer = document.getElementById('balcony_count_container');
+    const select = document.getElementById('balcony_count');
+    
+    if (hasBalcony) {
+        countContainer.classList.remove('hidden');
+    } else {
+        countContainer.classList.add('hidden');
+        select.value = "";
+        updateBalconyFields();
+    }
+}
+
+function updateBalconyFields() {
+    const container = document.getElementById('balconies_container');
+    const select = document.getElementById('balcony_count');
+    
+    let currentFormId = document.getElementById('form_id').value;
+    let forms = getStoredForms();
+    let savedData = (forms[currentFormId] && forms[currentFormId].data) ? forms[currentFormId].data : {};
+
+    container.innerHTML = '';
+    if (!select.value) return;
+
+    const count = parseInt(select.value, 10);
+
+    for (let i = 1; i <= count; i++) {
+        const titleText = (i === 1) ? 'גודל מרפסת ראשית (מ"ר):' : `גודל מרפסת ${i} (מ"ר):`;
+        let savedSize = savedData[`גודל_מרפסת_${i}`] || '';
+        
+        const balconyHTML = `
+            <div class="balcony-card">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>${titleText}</label>
+                        <input type="number" step="0.1" name="גודל_מרפסת_${i}" value="${savedSize}" oninput="autoSaveCurrentForm()">
+                    </div>
+                    <div class="form-group">
+                        <label>פונה לכיוון (מרפסת ${i}):</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="כיוון_מרפסת_${i}[]" value="צפון" onchange="autoSaveCurrentForm()"> צפון</label>
+                            <label><input type="checkbox" name="כיוון_מרפסת_${i}[]" value="דרום" onchange="autoSaveCurrentForm()"> דרום</label>
+                            <label><input type="checkbox" name="כיוון_מרפסת_${i}[]" value="מזרח" onchange="autoSaveCurrentForm()"> מזרח</label>
+                            <label><input type="checkbox" name="כיוון_מרפסת_${i}[]" value="מערב" onchange="autoSaveCurrentForm()"> מערב</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', balconyHTML);
+    }
+}
+
+function toggleAgentField(hasAgent) {
+    const agentInput = document.getElementById('agent_name_input');
+    if (hasAgent) {
+        agentInput.classList.remove('hidden');
+    } else {
+        agentInput.classList.add('hidden');
+        agentInput.value = '';
+    }
+}
+
+function toggleUpperCabinetsHeight(isCustom) {
+    const cmInput = document.getElementById('upper_cabinets_cm');
+    if (isCustom) {
+        cmInput.classList.remove('hidden');
+    } else {
+        cmInput.classList.add('hidden');
+        cmInput.value = '';
+    }
+}
+
+function toggleRoomsAirconField(checkbox) {
+    const airconInput = document.getElementById('rooms_aircon_input');
+    if (checkbox.checked) {
+        airconInput.classList.remove('hidden');
+    } else {
+        airconInput.classList.add('hidden');
+        airconInput.value = '';
+    }
+}
+
+function toggleGasCompanyField(hasGas) {
+    const gasCompanyInput = document.getElementById('gas_company_input');
+    if (hasGas) {
+        gasCompanyInput.classList.remove('hidden');
+    } else {
+        gasCompanyInput.classList.add('hidden');
+        gasCompanyInput.value = '';
+    }
+}
+
+function toggleShuttersTypeField(hasShutters) {
+    const shuttersTypeContainer = document.getElementById('shutters_type_container');
+    if (hasShutters) {
+        shuttersTypeContainer.classList.remove('hidden');
+    } else {
+        shuttersTypeContainer.classList.add('hidden');
+    }
+}
+</script>
+
+</body>
+</html>
