@@ -803,18 +803,18 @@
             <div class="form-group">
                 <label>מדרגות כניסה לבית:</label>
                 <div class="radio-group">
-                    <label><input type="radio" name="מדרגות_לבית_קיום" value="אין"> אין</label>
-                    <label><input type="radio" name="מדרגות_לבית_קיום" value="יש"> יש</label>
+                    <label><input type="radio" name="מדרגות_לבית_קיום" value="אין" onchange="toggleHouseStairsField(false)"> אין</label>
+                    <label><input type="radio" name="מדרגות_לבית_קיום" value="יש" onchange="toggleHouseStairsField(true)"> יש</label>
                 </div>
-                <input type="number" id="field_כמות_מדרגות_לבית" name="כמות_מדרגות_לבית" placeholder="כמות מדרגות" style="margin-top:5px;">
+                <input type="number" id="field_כמות_מדרגות_לבית" name="כמות_מדרגות_לבית" placeholder="כמות מדרגות" class="hidden" style="margin-top:5px;">
             </div>
             <div class="form-group">
                 <label>מדרגות כניסה לבניין:</label>
                 <div class="radio-group">
-                    <label><input type="radio" name="מדרגות_לבניין_קיום" value="אין"> אין</label>
-                    <label><input type="radio" name="מדרגות_לבניין_קיום" value="יש"> יש</label>
+                    <label><input type="radio" name="מדרגות_לבניין_קיום" value="אין" onchange="toggleBuildingStairsField(false)"> אין</label>
+                    <label><input type="radio" name="מדרגות_לבניין_קיום" value="יש" onchange="toggleBuildingStairsField(true)"> יש</label>
                 </div>
-                <input type="number" id="field_כמות_מדרגות_לבניין" name="כמות_מדרגות_לבניין" placeholder="כמות מדרגות" style="margin-top:5px;">
+                <input type="number" id="field_כמות_מדרגות_לבניין" name="כמות_מדרגות_לבניין" placeholder="כמות מדרגות" class="hidden" style="margin-top:5px;">
             </div>
         </div>
         <div class="form-group">
@@ -1242,6 +1242,16 @@ function triggerConditionalDisplays() {
     shuttersRadios.forEach(r => {
         if (r.checked) toggleShuttersTypeField(r.value === 'יש');
     });
+
+    let houseStairsRadios = document.querySelectorAll('input[name="מדרגות_לבית_קיום"]');
+    houseStairsRadios.forEach(r => {
+        if (r.checked) toggleHouseStairsField(r.value === 'יש');
+    });
+
+    let buildingStairsRadios = document.querySelectorAll('input[name="מדרגות_לבניין_קיום"]');
+    buildingStairsRadios.forEach(r => {
+        if (r.checked) toggleBuildingStairsField(r.value === 'יש');
+    });
 }
 
 function formatCurrency(input, realValueId) {
@@ -1393,6 +1403,26 @@ function toggleShuttersTypeField(hasShutters) {
         shuttersTypeContainer.classList.remove('hidden');
     } else {
         shuttersTypeContainer.classList.add('hidden');
+    }
+}
+
+function toggleHouseStairsField(hasStairs) {
+    const input = document.getElementById('field_כמות_מדרגות_לבית');
+    if (hasStairs) {
+        input.classList.remove('hidden');
+    } else {
+        input.classList.add('hidden');
+        input.value = '';
+    }
+}
+
+function toggleBuildingStairsField(hasStairs) {
+    const input = document.getElementById('field_כמות_מדרגות_לבניין');
+    if (hasStairs) {
+        input.classList.remove('hidden');
+    } else {
+        input.classList.add('hidden');
+        input.value = '';
     }
 }
 </script>
